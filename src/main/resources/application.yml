@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: redmine-timer
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/redmine_timer}
+    username: ${SPRING_DATASOURCE_USERNAME:redmine_timer}
+    password: ${SPRING_DATASOURCE_PASSWORD:redmine_timer}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+redmine:
+  url: ${REDMINE_URL:}
+  api-key: ${REDMINE_API_KEY:}
+
+logging:
+  level:
+    com.renato.redminetimer: INFO

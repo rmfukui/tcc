@@ -1,0 +1,148 @@
+html {
+  min-width: 320px;
+}
+
+body {
+  margin: 0;
+  background: #f6f7f5;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-bar {
+  border-bottom: 1px solid #d9dedb;
+}
+
+.toolbar {
+  min-height: 72px;
+  gap: 14px;
+}
+
+.brand-mark {
+  align-items: center;
+  background: #256c63;
+  border-radius: 8px;
+  color: #ffffff;
+  display: flex;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.main-container {
+  padding-bottom: 32px;
+  padding-top: 24px;
+}
+
+.top-alert {
+  margin-bottom: 16px;
+}
+
+.dashboard-grid {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+  margin-bottom: 18px;
+}
+
+.left-column,
+.right-column {
+  display: grid;
+  gap: 18px;
+}
+
+.section-title-row {
+  align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.connection-form {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
+}
+
+.task-panel {
+  min-height: 100%;
+}
+
+.task-list {
+  max-height: 520px;
+  overflow: auto;
+}
+
+.task-title {
+  padding-right: 104px;
+}
+
+.timer-display {
+  background: #eef4f1;
+  border: 1px solid #c9d8d3;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.timer-value {
+  color: #1f5d55;
+  font-family: "Segoe UI Mono", "Roboto Mono", monospace;
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+.history-title {
+  margin-bottom: 14px;
+}
+
+.history-table {
+  border-color: #d9dedb;
+  border-radius: 8px;
+  max-height: 360px;
+}
+
+.footer-note {
+  align-items: center;
+  color: #5e6965;
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+@media (max-width: 980px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .connection-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .toolbar {
+    min-height: 64px;
+  }
+
+  .main-container {
+    padding-top: 16px;
+  }
+
+  .section-title-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .timer-value {
+    font-size: 34px;
+  }
+
+  .task-title {
+    padding-right: 0;
+  }
+}

@@ -1,0 +1,13 @@
+target/
+frontend/dist/
+frontend/node_modules/
+.idea/
+.vscode/
+*.iml
+.env
+*.log
+.classpath
+.project
+.settings/
+
+postgres_data/

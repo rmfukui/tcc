@@ -1,0 +1,116 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: redmine-timer-postgres
+    environment:
+      POSTGRES_DB: redmine_timer
+      POSTGRES_USER: redmine_timer
+      POSTGRES_PASSWORD: redmine_timer
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U redmine_timer -d redmine_timer"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redmine-postgres:
+    image: postgres:16-alpine
+    container_name: redmine-demo-postgres
+    environment:
+      POSTGRES_DB: redmine
+      POSTGRES_USER: redmine
+      POSTGRES_PASSWORD: redmine
+    ports:
+      - "5433:5432"
+    volumes:
+      - redmine_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U redmine -d redmine"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redmine:
+    image: redmine:5.1
+    container_name: redmine-demo
+    depends_on:
+      redmine-postgres:
+        condition: service_healthy
+    environment:
+      REDMINE_DB_POSTGRES: redmine-postgres
+      REDMINE_DB_DATABASE: redmine
+      REDMINE_DB_USERNAME: redmine
+      REDMINE_DB_PASSWORD: redmine
+      REDMINE_SECRET_KEY_BASE: redmine_timer_demo_secret_key_base
+      REDMINE_LANG: en
+    ports:
+      - "3000:3000"
+    volumes:
+      - redmine_files:/usr/src/redmine/files
+    healthcheck:
+      test: ["CMD-SHELL", "ruby -rsocket -e 'TCPSocket.new(\"127.0.0.1\", 3000).close'"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+  redmine-seed:
+    image: redmine:5.1
+    container_name: redmine-demo-seed
+    depends_on:
+      redmine:
+        condition: service_healthy
+    environment:
+      REDMINE_DB_POSTGRES: redmine-postgres
+      REDMINE_DB_DATABASE: redmine
+      REDMINE_DB_USERNAME: redmine
+      REDMINE_DB_PASSWORD: redmine
+      REDMINE_SECRET_KEY_BASE: redmine_timer_demo_secret_key_base
+      REDMINE_API_KEY: ${REDMINE_API_KEY}
+    volumes:
+      - ./docker/redmine/database.yml:/usr/src/redmine/config/database.yml
+      - ./docker/redmine/seed.rb:/usr/src/redmine/seed.rb:ro
+      - redmine_files:/usr/src/redmine/files
+    command: rails runner /usr/src/redmine/seed.rb
+    restart: "no"
+
+  backend:
+    build: .
+    container_name: redmine-timer-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redmine:
+        condition: service_healthy
+      redmine-seed:
+        condition: service_completed_successfully
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/redmine_timer
+      SPRING_DATASOURCE_USERNAME: redmine_timer
+      SPRING_DATASOURCE_PASSWORD: redmine_timer
+      REDMINE_URL: ${REDMINE_URL}
+      REDMINE_API_KEY: ${REDMINE_API_KEY}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: redmine-timer-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:8080
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+
+volumes:
+  postgres_data:
+  redmine_postgres_data:
+  redmine_files:
+  frontend_node_modules:
